@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 require('dotenv').config();
+
+app.use(cors());
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
