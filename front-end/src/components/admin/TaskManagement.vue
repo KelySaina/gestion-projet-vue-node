@@ -19,6 +19,7 @@
         placeholder="Search by name"
         class="bg-gray-800 text-white border border-gray-700 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600">Refresh</button>
     </div>
 
     <!-- Task Table or No Tasks Message -->
@@ -51,7 +52,6 @@
               ></span>
               {{ task.status.charAt(0).toUpperCase() + task.status.slice(1) }}
             </td>
-            
             <td class="border px-4 py-2">{{ getUserName(task.Pid_person) }}</td>
             <td class="border px-4 py-2">
               <button @click="editTask(task)" class="bg-blue-500 text-white px-2 py-1">Edit</button>
@@ -83,9 +83,13 @@ export default defineComponent({
     const searchQuery = ref('');
     const editTaskData = ref(null);
 
-    onMounted(async () => {
+    const fetchTasksAndUsers = async () => {
       await authStore.fetchTasks();
       await authStore.fetchUsers();
+    };
+
+    onMounted(async () => {
+      await fetchTasksAndUsers();
     });
 
     const fetchTaskData = async (taskId) => {
@@ -99,13 +103,13 @@ export default defineComponent({
 
     const handleCreateTask = async (newTask) => {
       await authStore.createTask(newTask);
-      await authStore.fetchTasks(); // Refresh tasks after creation
+      await fetchTasksAndUsers(); // Refresh tasks after creation
       isTaskModalVisible.value = false;
     };
 
     const handleUpdateTask = async (updatedTask) => {
       await authStore.updateTask(updatedTask);
-      await authStore.fetchTasks(); // Refresh tasks after update
+      await fetchTasksAndUsers(); // Refresh tasks after update
       isEditTaskModalVisible.value = false;
     };
 
@@ -115,7 +119,7 @@ export default defineComponent({
 
     const deleteTask = async (id) => {
       await authStore.deleteTask(id);
-      await authStore.fetchTasks(); // Refresh tasks after deletion
+      await fetchTasksAndUsers(); // Refresh tasks after deletion
     };
 
     const getUserName = (userId) => {
@@ -133,6 +137,10 @@ export default defineComponent({
       );
     });
 
+    const refreshData = async () => {
+      await fetchTasksAndUsers(); // Refresh tasks and users
+    };
+
     return {
       authStore,
       isTaskModalVisible,
@@ -145,6 +153,7 @@ export default defineComponent({
       editTask,
       deleteTask,
       getUserName,
+      refreshData, // Add this to the returned object
     };
   }
 });

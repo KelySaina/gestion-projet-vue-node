@@ -7,23 +7,23 @@ module.exports = {
 
     const users = [
       {
-        name: 'Alice',
-        lastname: 'Smith',
-        email: 'alice.smith@example.com',
-        password: 'alice.password',
-        role: 'admin',
+        name: 'Test',
+        lastname: 'User',
+        email: 'test.user@project.management',
+        password: 'user',
+        role: 'user',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'Bob',
-        lastname: 'Johnson',
-        email: 'bob.johnson@example.com',
-        password: 'bob.password',
-        role: 'user',
+        name: 'Test',
+        lastname: 'Admin',
+        email: 'test.admin@project.management',
+        password: 'admin',
+        role: 'admin',
         createdAt: new Date(),
         updatedAt: new Date()
-      }
+      },
     ];
 
     // Hash passwords

@@ -13,6 +13,7 @@
         placeholder="Search by name"
         class="bg-gray-800 text-white border border-gray-700 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600">Refresh</button>
     </div>
 
     <!-- User Cards or No Users Message -->
@@ -46,7 +47,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, watch } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../../store';
 import UserModal from './UserModal.vue';
 import EditUserModal from './EditUserModal.vue';
@@ -64,6 +65,14 @@ export default defineComponent({
     const searchQuery = ref('');
     const editUserData = ref(null);
 
+    const fetchUsers = async () => {
+      await authStore.fetchUsers();
+    };
+
+    onMounted(async () => {
+      await fetchUsers();
+    });
+
     const fetchUserData = async (userId) => {
       await authStore.fetchUserByID(userId);
       const user = authStore.singleUser;
@@ -75,13 +84,13 @@ export default defineComponent({
 
     const handleCreateUser = async (newUser) => {
       await authStore.createUser(newUser);
-      // No need to call fetchUsers here, watcher will handle it
+      await fetchUsers(); // Refresh users after creation
       isModalVisible.value = false;
     };
 
     const handleUpdateUser = async (updatedUser) => {
       await authStore.updateUser(updatedUser);
-      // No need to call fetchUsers here, watcher will handle it
+      await fetchUsers(); // Refresh users after update
       isEditModalVisible.value = false;
     };
 
@@ -91,7 +100,7 @@ export default defineComponent({
 
     const deleteUser = async (id) => {
       await authStore.deleteUser(id);
-      // No need to call fetchUsers here, watcher will handle it
+      await fetchUsers(); // Refresh users after deletion
     };
 
     const filteredUsers = computed(() => {
@@ -102,10 +111,9 @@ export default defineComponent({
       );
     });
 
-    // Watch for changes in authStore.users
-    watch(() => authStore.users, (newUsers) => {
-      // Refresh the filteredUsers computed property
-    });
+    const refreshData = async () => {
+      await fetchUsers(); // Refresh users
+    };
 
     return {
       isModalVisible,
@@ -116,7 +124,8 @@ export default defineComponent({
       handleUpdateUser,
       editUser,
       deleteUser,
-      editUserData
+      editUserData,
+      refreshData, // Add this to the returned object
     };
   }
 });
