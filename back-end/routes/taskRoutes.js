@@ -11,6 +11,7 @@ router.post('/', taskController.createTask); // Admin only
 router.get('/', taskController.getTasks); // Admin only
 router.get('/:id', taskController.getTaskById);
 router.put('/:id', taskController.updateTask);
+router.get('/user/:userId', taskController.findTasksByUserId);
 router.delete('/:id', taskController.deleteTask); // Admin only
 
 module.exports = router;

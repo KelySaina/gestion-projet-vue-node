@@ -11,6 +11,8 @@ export const useAuthStore = defineStore('auth', {
     users: [], // Store for all users
     tasks: [], // Store for all tasks
     singleUser: null,
+    singleTask: null, // Store for a single task
+    userTasks: [], // Store for tasks by user ID
   }),
   actions: {
     async login(email, password) {
@@ -115,6 +117,44 @@ export const useAuthStore = defineStore('auth', {
         this.error = error.message || 'An unexpected error occurred';
       }
     },
+    async fetchTaskByID(taskId) {
+      try {
+        const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+          headers: {
+            'X-Authorization': `${this.token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          this.singleTask = data;
+        } else {
+          this.error = 'Failed to fetch task';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
+    async fetchTasksByUserId(userId) {
+      try {
+        const response = await fetch(`${API_URL}/tasks/user/${userId}`, {
+          headers: {
+            'X-Authorization': `${this.token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          this.userTasks = data;
+        } else {
+          this.error = 'Failed to fetch tasks for user';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
     async createUser(newUser) {
       try {
         const response = await fetch(`${API_URL}/users/register`, {
@@ -155,6 +195,105 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         this.error = error.message || 'An unexpected error occurred';
       }
-    }
+    },
+    async updateUser(updatedUser) {
+      try {
+        const response = await fetch(`${API_URL}/users/${updatedUser.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Authorization': `${this.token}`
+          },
+          body: JSON.stringify(updatedUser)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const index = this.users.findIndex(user => user.id === updatedUser.id);
+          if (index !== -1) {
+            this.users[index] = data;
+          }
+        } else {
+          this.error = data.msg || 'Failed to update user';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
+    async createTask(newTask) {
+      try {
+        const response = await fetch(`${API_URL}/tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Authorization': `${this.token}`
+          },
+          body: JSON.stringify(newTask)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          this.tasks.push(data);
+        } else {
+          this.error = data.msg || 'Failed to create task';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
+    async deleteTask(taskId) {
+      try {
+        const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-Authorization': `${this.token}`
+          }
+        });
+
+        if (response.ok) {
+          this.tasks = this.tasks.filter(task => task.id !== taskId);
+        } else {
+          const data = await response.json();
+          this.error = data.msg || 'Failed to delete task';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
+    async updateTask(updatedTask) {
+      try {
+        const response = await fetch(`${API_URL}/tasks/${updatedTask.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Authorization': `${this.token}`
+          },
+          body: JSON.stringify(updatedTask)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const index = this.tasks.findIndex(task => task.id === updatedTask.id);
+          if (index !== -1) {
+            this.tasks[index] = data;
+          }
+        } else {
+          this.error = data.msg || 'Failed to update task';
+        }
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
+    async updateTaskStatus(taskId, newStatus) {
+      try {
+        const updatedTask = { id: taskId, status: newStatus };
+        await this.updateTask(updatedTask); // Use the updateTask method to update the status
+      } catch (error) {
+        this.error = error.message || 'An unexpected error occurred';
+      }
+    },
   },
 });

@@ -1,7 +1,8 @@
 <template>
   <div class="p-8 bg-gray-900 h-[500px] ml-12">
-    <!-- User Modal -->
+    <!-- User Modals -->
     <UserModal :isVisible="isModalVisible" @close="isModalVisible = false" @create-user="handleCreateUser" />
+    <EditUserModal :isVisible="isEditModalVisible" :user="editUserData" @close="isEditModalVisible = false" @update-user="handleUpdateUser" />
 
     <!-- Header Section -->
     <div class="flex items-center justify-between w-full mb-4">
@@ -20,7 +21,7 @@
         <p class="text-white">Users not found</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-[250px] w-[250px]">
+        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-[250px] w-[300px]">
           <div class="flex items-center mb-4">
             <div class="text-xl font-semibold">
               <p>{{ user.name }} {{ user.lastname }}</p>
@@ -34,9 +35,9 @@
             <div class="font-medium">Role:</div>
             <div>{{ user.role }}</div>
           </div>
-          <div class="flex justify-between">
-            <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</button>
-            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+          <div class="flex justify-evenly">
+            <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-[75px]">Edit</button>
+            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 w-[75px]">Delete</button>
           </div>
         </div>
       </div>
@@ -45,24 +46,53 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { defineComponent, ref, computed, watch } from 'vue';
 import { useAuthStore } from '../../store';
 import UserModal from './UserModal.vue';
+import EditUserModal from './EditUserModal.vue';
 
-export default {
+export default defineComponent({
   name: 'UserManagement',
   components: {
-    UserModal
+    UserModal,
+    EditUserModal
   },
   setup() {
     const authStore = useAuthStore();
     const isModalVisible = ref(false);
+    const isEditModalVisible = ref(false);
     const searchQuery = ref('');
-    
-    // Fetch users when the component is mounted
-    onMounted(async () => {
-      await authStore.fetchUsers();
-    });
+    const editUserData = ref(null);
+
+    const fetchUserData = async (userId) => {
+      await authStore.fetchUserByID(userId);
+      const user = authStore.singleUser;
+      if (user) {
+        editUserData.value = { ...user }; // Populate the modal with user data
+        isEditModalVisible.value = true;
+      }
+    };
+
+    const handleCreateUser = async (newUser) => {
+      await authStore.createUser(newUser);
+      // No need to call fetchUsers here, watcher will handle it
+      isModalVisible.value = false;
+    };
+
+    const handleUpdateUser = async (updatedUser) => {
+      await authStore.updateUser(updatedUser);
+      // No need to call fetchUsers here, watcher will handle it
+      isEditModalVisible.value = false;
+    };
+
+    const editUser = (user) => {
+      fetchUserData(user.id); // Fetch and populate the user data
+    };
+
+    const deleteUser = async (id) => {
+      await authStore.deleteUser(id);
+      // No need to call fetchUsers here, watcher will handle it
+    };
 
     const filteredUsers = computed(() => {
       const query = searchQuery.value.toLowerCase();
@@ -72,32 +102,26 @@ export default {
       );
     });
 
-    const handleCreateUser = async (newUser) => {
-      await authStore.createUser(newUser);
-      await authStore.fetchUsers(); // Refresh users after creating
-      isModalVisible.value = false;
-    };
-
-    const deleteUser = async (userId) => {
-      await authStore.deleteUser(userId);
-      await authStore.fetchUsers(); // Refresh users after deleting
-    };
-
-    const editUser = (user) => {
-      // Implement edit user functionality
-    };
+    // Watch for changes in authStore.users
+    watch(() => authStore.users, (newUsers) => {
+      // Refresh the filteredUsers computed property
+    });
 
     return {
       isModalVisible,
+      isEditModalVisible,
       searchQuery,
       filteredUsers,
       handleCreateUser,
+      handleUpdateUser,
+      editUser,
       deleteUser,
-      editUser
+      editUserData
     };
   }
-};
+});
 </script>
 
 <style scoped>
+/* Add custom styles if needed */
 </style>

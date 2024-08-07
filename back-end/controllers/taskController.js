@@ -41,7 +41,7 @@ exports.getTaskById = async (req, res) => {
 
     // Check if the user is an admin or the task is assigned to the user
     if (req.user.role === 'user' && task.Pid_person !== req.user.id) {
-      return res.status(403).json({ msg: task.Pid_person });
+      return res.status(403).json({ msg: 'Access denied' });
     }
 
     res.json(task);
@@ -86,6 +86,19 @@ exports.deleteTask = async (req, res) => {
 
     await task.destroy();
     res.json({ msg: 'Task deleted' });
+  } catch (error) {
+    res.status(500).json({ msg: 'Server error', error });
+  }
+};
+
+// Find tasks by user ID
+exports.findTasksByUserId = async (req, res) => {
+  try {
+    const tasks = await Task.findAll({ where: { Pid_person: req.params.userId } });
+    
+    if (!tasks || tasks.length === 0) return res.status(404).json({ msg: 'Tasks not found' });
+
+    res.json(tasks);
   } catch (error) {
     res.status(500).json({ msg: 'Server error', error });
   }

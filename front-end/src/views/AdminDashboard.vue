@@ -9,7 +9,6 @@
 
 <script>
 import SideBar from '../components/admin/SideBar.vue';
-import { useAuthStore } from '../store';
 
 export default {
   name: 'AdminDashboard',
