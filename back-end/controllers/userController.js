@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 // Create a new user (admin only)
 exports.createUser = async (req, res) => {
-  //if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
+  if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
 
   try {
     const { name, lastname, email, password, role } = req.body;
@@ -28,18 +28,31 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Find user by email
     const user = await User.findOne({ where: { email } });
 
-    if (!user || !bcrypt.compareSync(password, user.password)) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+    // Check if user exists and password is correct
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token: token });
+    // Compare provided password with stored hashed password
+    if (!bcrypt.compareSync(password, user.password)) {
+      return res.status(401).json({ msg: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '10h' });
+
+    // Send token and user role in response
+    res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
-    res.status(500).json({ msg: 'Server error', error });
+    console.error('Server error:', error); // Log the error for debugging
+    res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 // Get all users (admin only)
 exports.getUsers = async (req, res) => {
