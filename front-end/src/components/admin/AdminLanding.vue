@@ -15,8 +15,8 @@
       
       <!-- Add more summary cards as needed -->
     </div>
-    
-      <TaskStatusChart />
+
+    <TaskStatusChart />
   </div>
 </template>
 
