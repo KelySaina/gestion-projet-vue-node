@@ -1,5 +1,49 @@
-# Vue 3 + Vite
+# Gestion Projet Vue Node
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A project management application using Vue.js for the front-end and Node.js for the back-end.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/KelySaina/gestion-projet-vue-node.git
+cd gestion-projet-vue-node
+```
+
+### 2. Backend Setup
+```bash
+cd back-end
+npm install
+```
+
+### 3. Frontend Setup
+In another terminal
+```bash
+cd /path/to/gestion-projet-vue-node
+cd front-end
+npm install
+```
+
+### 4. Environment Variables
+Create `.env` files in both `back-end` and `front-end` directories according to .env.example
+
+### 5. Create a database
+Create a database with the same name as you specified in .env
+After the database is created, migrate the database using sequelize:
+```bash
+cd /path/to/gestion-projet-vue-node
+cd back-end
+npm run migration
+```
+
+Seed the database with default Users and Tasks
+```bash
+npm run seed
+```
+## Usage
+
+Access the application at `http://localhost:5173`.
+
+The default credentials are:
+- For an `admin` user: `email` : `test.admin@project.management` | `password` : `admin`
+- For an `user` user: `email` : `test.user@project.management` | `password` : `user`

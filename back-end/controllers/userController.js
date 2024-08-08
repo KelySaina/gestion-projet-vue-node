@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const Sequelize = require('sequelize');
 
 // Create a new user (admin only)
 exports.createUser = async (req, res) => {
@@ -15,7 +16,8 @@ exports.createUser = async (req, res) => {
       lastname,
       email,
       password: hashedPassword,
-      role
+      role,
+      status: 'active' // Default to active status
     });
 
     res.status(201).json(user);
@@ -29,8 +31,13 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ where: { email } });
+    // Find user by email and ensure they are not deleted
+    const user = await User.findOne({
+      where: {
+        email,
+        status: { [Sequelize.Op.ne]: 'deleted' } // Exclude deleted users
+      }
+    });
 
     // Check if user exists and password is correct
     if (!user) {
@@ -53,13 +60,14 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-
 // Get all users (admin only)
 exports.getUsers = async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
 
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      where: { status: { [Sequelize.Op.ne]: 'deleted' } } // Exclude deleted users
+    });
     res.json(users);
   } catch (error) {
     res.status(500).json({ msg: 'Server error', error });
@@ -71,7 +79,12 @@ exports.getUserById = async (req, res) => {
   //if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
 
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findOne({
+      where: {
+        id: req.params.id,
+        status: { [Sequelize.Op.ne]: 'deleted' } // Exclude deleted users
+      }
+    });
     if (!user) return res.status(404).json({ msg: 'User not found' });
     res.json(user);
   } catch (error) {
@@ -85,7 +98,12 @@ exports.updateUser = async (req, res) => {
 
   try {
     const { name, lastname, email, password, role } = req.body;
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findOne({
+      where: {
+        id: req.params.id,
+        status: { [Sequelize.Op.ne]: 'deleted' } // Exclude deleted users
+      }
+    });
 
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
@@ -105,17 +123,25 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// Delete a user by ID (admin only)
+// Delete (mark as deleted) a user by ID (admin only)
 exports.deleteUser = async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Access denied' });
 
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findOne({
+      where: {
+        id: req.params.id,
+        status: { [Sequelize.Op.ne]: 'deleted' } // Exclude already deleted users
+      }
+    });
 
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
-    await user.destroy();
-    res.json({ msg: 'User deleted' });
+    // Set status to "deleted" instead of actually deleting
+    user.status = 'deleted';
+    await user.save();
+
+    res.json({ msg: 'User marked as deleted' });
   } catch (error) {
     res.status(500).json({ msg: 'Server error', error });
   }

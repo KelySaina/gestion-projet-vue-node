@@ -1,6 +1,6 @@
 <template>
-    <nav class="bg-gray-900 text-white p-4 shadow-md">
-      <div class="container mx-auto flex justify-between items-center">
+    <nav class="bg-gray-900 text-white p-2 shadow-md">
+      <div class="container mx-auto flex justify-between items-center pt-2">
         <div class="text-2xl font-bold">
           Project Manager - [ {{ userName }} ]
         </div>
