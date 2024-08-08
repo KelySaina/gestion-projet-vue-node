@@ -22,19 +22,13 @@
         <p class="text-white">Users not found</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-[250px] w-[300px]">
-          <div class="flex items-center mb-4">
-            <div class="text-xl font-semibold">
-              <p>{{ user.name }} {{ user.lastname }}</p>
-            </div>
+        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-[150px] w-[300px]">
+          <div class="flex justify-between items-center text-2xl mb-4">
+            <p>{{ user.name }} {{ user.lastname }}</p>
+            <p class="border border-white-800 rounded-lg text-sm shadow-mg pl-1 pr-1">{{ user.role }}</p>
           </div>
           <div class="mb-2">
-            <div class="font-medium">Email:</div>
-            <div>{{ user.email }}</div>
-          </div>
-          <div class="mb-4">
-            <div class="font-medium">Role:</div>
-            <div>{{ user.role }}</div>
+            <div><i>{{ user.email }}</i></div>
           </div>
           <div class="flex justify-evenly">
             <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-[75px]">Edit</button>
