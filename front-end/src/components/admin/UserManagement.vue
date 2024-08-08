@@ -22,7 +22,7 @@
         <p class="text-white">Users not found</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-[150px] w-[300px]">
+        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-auto w-[300px]">
           <div class="flex justify-between items-center text-2xl mb-4">
             <p>{{ user.name }} {{ user.lastname }}</p>
             <p class="border border-white-800 rounded-lg text-sm shadow-mg pl-1 pr-1">{{ user.role }}</p>
