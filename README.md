@@ -1,6 +1,6 @@
 # Gestion Projet Vue Node
 
-A project management application using Vue.js for the front-end and Node.js for the back-end.
+A project management application using Vue.js and Vite for the front-end and Node.js for the back-end.
 
 ## Installation
 
@@ -51,12 +51,12 @@ To start front-end:
 ```bash
 npm run dev
 ```
-OU
+OR
 ```bash
 npm run serve
 ```
 
-Access the application at `http://localhost:5173`.
+Access the application at `http://localhost:5173` OR at `http://localhost:8080`
 
 The default credentials are:
 - For an `admin` user: `email` : `test.admin@project.management` | `password` : `admin`
