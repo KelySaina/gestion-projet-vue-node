@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VUE_APP_API_URL;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
