@@ -1,6 +1,6 @@
 # Gestion Projet Vue Node
 
-A project management application using Vue.js for the front-end and Node.js for the back-end.
+A project management application using Vue.js + Vite for the front-end and Node.js for the back-end.
 
 ## Installation
 
@@ -41,6 +41,20 @@ Seed the database with default Users and Tasks
 npm run seed
 ```
 ## Usage
+
+To start back-end:
+```bash
+npm start
+```
+
+To start front-end:
+```bash
+npm run dev
+```
+OU
+```bash
+npm run serve
+```
 
 Access the application at `http://localhost:5173`.
 
