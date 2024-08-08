@@ -42,6 +42,20 @@ npm run seed
 ```
 ## Usage
 
+To start back-end:
+```bash
+npm start
+```
+
+To start front-end:
+```bash
+npm run dev
+```
+OU
+```bash
+npm run serve
+```
+
 Access the application at `http://localhost:5173`.
 
 The default credentials are:
