@@ -1,25 +1,35 @@
 <template>
-  <div class="h-[500px] bg-gray-800 text-white w-70 rounded-md p-4">
+  <div class="h-[500px] bg-gray-900 text-white w-70 rounded-md p-4">
     <div class="p-3">
       <h1 class="text-2xl font-bold">Hi, {{ name }}</h1>
     </div>
     <nav class="flex flex-col h-full">
       <ul>
-        <li class="p-4 hover:border border-white-500 rounded-md">
-          <router-link to="/admin/landing">Home</router-link>
+        <router-link to="/admin/landing">
+          <li class="p-2 hover:border-l-4 border-white-500 flex items-center">
+          <font-awesome-icon :icon="['fas', 'home']" class="mr-2" />
+          Home
         </li>
-        <li class="p-4 hover:border border-white-500 rounded-md">
-          <router-link to="/admin/users">User Management</router-link>
-        </li>
-        <li class="p-4 hover:border border-white-500 rounded-md">
-          <router-link to="/admin/tasks">Task Management</router-link>
+        </router-link>
+        <router-link to="/admin/users">
+          <li class="p-2 hover:border-l-4 border-white-500 flex items-center">
+            <font-awesome-icon :icon="['fas', 'users']" class="mr-2" />
+            User Management
+          </li>
+        </router-link>
+        <router-link to="/admin/tasks">
+          <li class="p-2 hover:border-l-4 border-white-500 flex items-center">
+            <font-awesome-icon :icon="['fas', 'tasks']" class="mr-2" />
+            Task Management
+          </li>
+        </router-link>
+        <li>
+          <button @click="logout" class="w-full p-2 text-left hover:border-l-4 border-white-500 flex items-center">
+            <font-awesome-icon :icon="['fas', 'sign-out-alt']" class="mr-2" />
+            Logout
+          </button>
         </li>
       </ul>
-      <div>
-        <button @click="logout" class="w-full p-4 text-left hover:border border-red-500 rounded-md">
-          Logout
-        </button>
-      </div>
     </nav>
   </div>
 </template>
@@ -27,9 +37,18 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { useAuthStore } from '../../store';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faHome, faUsers, faTasks, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+
+// Add icons to the library
+library.add(faHome, faUsers, faTasks, faSignOutAlt);
 
 export default {
   name: 'Sidebar',
+  components: {
+    FontAwesomeIcon,
+  },
   setup() {
     const authStore = useAuthStore();
 

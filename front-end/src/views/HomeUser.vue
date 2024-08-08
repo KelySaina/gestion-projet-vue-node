@@ -24,9 +24,9 @@
       </span>
     </p>
     
-    <div v-if="filteredTasks.length > 0" class="bg-gray-800 p-2 rounded-md shadow-lg h-[350px]">
-      <div class="grid gap-4 overflow-y-auto h-[335px]">
-        <div v-for="task in filteredTasks" :key="task.id" class="p-4 bg-gray-700 rounded-md shadow-md h-auto overflow-y-auto">
+    <div v-if="filteredTasks.length > 0" class="bg-gray-800 p-2 rounded-md shadow-lg h-[350px] min-h-[200px] overflow-y-auto">
+      <div class="grid gap-4">
+        <div v-for="task in filteredTasks" :key="task.id" class="p-4 bg-gray-700 rounded-md shadow-md">
           <h3 class="text-xl font-semibold flex justify-between items-center">
             <p>{{ task.name }}</p>
             <span 

@@ -1,19 +1,26 @@
 <template>
-  <div class="p-8 bg-gray-900 h-[500px] ml-12">
+  <div class="p-8 bg-gray-800 h-[500px] ml-12">
     <!-- User Modals -->
     <UserModal :isVisible="isModalVisible" @close="isModalVisible = false" @create-user="handleCreateUser" />
     <EditUserModal :isVisible="isEditModalVisible" :user="editUserData" @close="isEditModalVisible = false" @update-user="handleUpdateUser" />
 
     <!-- Header Section -->
     <div class="flex items-center justify-between w-full mb-4">
-      <button @click="isModalVisible = true" class="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-600">Add New User</button>
+      <button @click="isModalVisible = true" class="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-600 flex items-center">
+        <font-awesome-icon :icon="['fas', 'user-plus']" class="mr-2" />
+        Add New User
+      </button>
+      <font-awesome-icon icon="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
       <input
         v-model="searchQuery"
         type="text"
         placeholder="Search by name"
         class="bg-gray-800 text-white border border-gray-700 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600">Refresh</button>
+      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 flex items-center">
+        <font-awesome-icon :icon="['fas', 'sync']" class="mr-2" />
+        Refresh
+      </button>
     </div>
 
     <!-- User Cards or No Users Message -->
@@ -22,17 +29,26 @@
         <p class="text-white">Users not found</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 p-6">
-        <div v-for="user in filteredUsers" :key="user.id" class="bg-gray-800 p-4 rounded-lg shadow-md text-white h-auto w-[300px]">
+        <div v-for="user in filteredUsers" :key="user.id" class="border border-blue-500 p-4 rounded-lg shadow-md text-white h-auto w-[300px]">
           <div class="flex justify-between items-center text-2xl mb-4">
             <p>{{ user.name }} {{ user.lastname }}</p>
-            <p class="border border-white-800 rounded-lg text-sm shadow-mg pl-1 pr-1">{{ user.role }}</p>
+            <p class="border border-white-800 rounded-lg text-sm shadow-mg pl-1 pr-1 flex items-center">
+              <font-awesome-icon :icon="user.role === 'admin' ? 'user-shield' : 'user'" class="mr-1" />
+              {{ user.role }}
+            </p>
           </div>
           <div class="mb-2">
             <div><i>{{ user.email }}</i></div>
           </div>
           <div class="flex justify-evenly">
-            <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-[75px]">Edit</button>
-            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 w-[75px]">Delete</button>
+            <button @click="editUser(user)" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 w-[90px] flex items-center">
+              <font-awesome-icon :icon="['fas', 'edit']" class="mr-1" />
+              Edit
+            </button>
+            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 w-[px] flex items-center">
+              <font-awesome-icon :icon="['fas', 'trash']" class="mr-1" />
+              Delete
+            </button>
           </div>
         </div>
       </div>
@@ -45,12 +61,19 @@ import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../../store';
 import UserModal from './UserModal.vue';
 import EditUserModal from './EditUserModal.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUserPlus, faSync, faUserShield, faUser, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+
+// Add icons to the library
+library.add(faUserPlus, faSync, faUserShield, faUser, faEdit, faTrash);
 
 export default defineComponent({
   name: 'UserManagement',
   components: {
     UserModal,
-    EditUserModal
+    EditUserModal,
+    FontAwesomeIcon,
   },
   setup() {
     const authStore = useAuthStore();
@@ -119,7 +142,7 @@ export default defineComponent({
       editUser,
       deleteUser,
       editUserData,
-      refreshData, // Add this to the returned object
+      refreshData,
     };
   }
 });

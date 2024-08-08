@@ -12,14 +12,18 @@
 
     <!-- Header Section -->
     <div class="flex items-center justify-between w-full mb-4">
-      <button @click="isTaskModalVisible = true" class="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-600">Add New Task</button>
+      <button @click="isTaskModalVisible = true" class="bg-green-500 text-white font-semibold px-4 py-2 rounded hover:bg-green-600 flex items-center">
+        <font-awesome-icon :icon="['fas', 'plus']" class="mr-2" /> Add New Task
+      </button>
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Search by name"
-        class="bg-gray-800 text-white border border-gray-700 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Search anything..."
+        class="bg-gray-800 text-white border border-gray-700 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-[200px]"
       />
-      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600">Refresh</button>
+      <button @click="refreshData" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 flex items-center">
+        <font-awesome-icon :icon="['fas', 'sync']" class="mr-2" /> Refresh
+      </button>
     </div>
 
     <!-- Task Table or No Tasks Message -->
@@ -27,24 +31,24 @@
       <div v-if="filteredTasks.length === 0" class="flex items-center justify-center w-full h-full">
         <p class="text-white">Tasks not found</p>
       </div>
-      <table v-else class="w-full table-auto">
+      <table v-else class="w-full table-auto bg-gray-800 text-white rounded-lg overflow-hidden shadow-lg">
         <thead>
-          <tr>
-            <th class="px-4 py-2">Task</th>
-            <th class="px-4 py-2">Description</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Owner</th>
-            <th class="px-4 py-2">Actions</th>
+          <tr class="bg-gray-700 text-left text-sm uppercase leading-normal">
+            <th class="px-4 py-2 w-1/4">Task</th>
+            <th class="px-4 py-2 w-1/3">Description</th>
+            <th class="px-4 py-2 w-1/6">Status</th>
+            <th class="px-4 py-2 w-1/5">Owner</th>
+            <th class="px-4 py-2 text-center w-[100px]">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="task in filteredTasks" :key="task.id">
-            <td class="border px-4 py-2">{{ task.name }}</td>
-            <td class="border px-4 py-2">{{ task.description }}</td>
-            <td class="border px-4 py-2">
+        <tbody class="text-sm font-normal">
+          <tr v-for="task in filteredTasks" :key="task.id" class="border-b border-gray-700 hover:bg-gray-600">
+            <td class="px-4 py-2 truncate">{{ task.name }}</td>
+            <td class="px-4 py-2 truncate">{{ task.description }}</td>
+            <td class="px-4 py-2">
               <span 
                 :class="{
-                  'w-3 h-3 rounded-full inline-block mr-2': true,
+                  'w-3 h-3 rounded-full inline-block mr-2 align-middle': true,
                   'bg-green-500': task.status === 'completed',
                   'bg-blue-500': task.status === 'in progress',
                   'bg-yellow-500': task.status === 'to do'
@@ -52,10 +56,19 @@
               ></span>
               {{ task.status.charAt(0).toUpperCase() + task.status.slice(1) }}
             </td>
-            <td class="border px-4 py-2">{{ getUserName(task.Pid_person) }}</td>
-            <td class="border px-4 py-2">
-              <button @click="editTask(task)" class="bg-blue-500 text-white px-2 py-1">Edit</button>
-              <button @click="deleteTask(task.id)" class="bg-red-500 text-white px-2 py-1">Delete</button>
+            <td class="px-4 py-2 truncate flex items-center">
+              <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
+              {{ getUserName(task.Pid_person) }}
+            </td>
+            <td class="px-4 py-2 text-center">
+              <button @click="editTask(task)" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 inline-flex items-center">
+                <font-awesome-icon :icon="['fas', 'edit']" class="mr-1" />
+                Edit
+              </button>
+              <button @click="deleteTask(task.id)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 inline-flex items-center ml-2">
+                <font-awesome-icon :icon="['fas', 'trash']" class="mr-1" />
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
@@ -69,12 +82,18 @@ import { defineComponent, ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../../store';
 import TaskModal from './TaskModal.vue';
 import EditTaskModal from './EditTaskModal.vue';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faPlus, faSync, faUser, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+library.add(faPlus, faSync, faUser, faEdit, faTrash);
 
 export default defineComponent({
   name: 'TaskManagement',
   components: {
     TaskModal,
-    EditTaskModal
+    EditTaskModal,
+    FontAwesomeIcon
   },
   setup() {
     const authStore = useAuthStore();
@@ -153,12 +172,19 @@ export default defineComponent({
       editTask,
       deleteTask,
       getUserName,
-      refreshData, // Add this to the returned object
+      refreshData,
     };
   }
 });
 </script>
 
 <style scoped>
-/* Add custom styles if needed */
+/* Additional custom styles for better UI */
+table th, table td {
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px; /* Adjust this value based on your needs */
+}
 </style>
